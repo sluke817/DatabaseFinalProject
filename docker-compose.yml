@@ -1,0 +1,35 @@
+version: '3.9'
+services:
+    php-apache:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - 3000:80
+        volumes:
+            #Change the first portion (prior to the : character) to the path of where you have saved this directory
+            - "/Users/lukes/Downloads/Phase3:/var/www/html"
+    mariadb:
+        image: mariadb:10.6.5
+        ports:
+            - 3307:3306 #Change the first port if necessary (if port 3307 is in use by something else)
+        volumes:
+            - db-volume:/var/lib/mysql
+        environment:
+            TZ: "America/Chicago"
+            MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+            MYSQL_ROOT_PASSWORD: "rootpwd"
+            MYSQL_USER: 'dbuser'
+            MYSQL_PASSWORD: 'dbpass'
+    adminer:
+        image: adminer
+        depends_on:
+            - mariadb
+        environment:
+            ADMINER_DEFAULT_SERVER: mariadb
+            ADMINER_DEFAULT_DB_DRIVER: mysql
+            ADMINER_DEFAULT_DB_HOST: mariadb
+        ports:
+            - 8080:8080
+volumes:
+    db-volume:
